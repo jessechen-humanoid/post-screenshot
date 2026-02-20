@@ -8,19 +8,56 @@ function errorWithCode(code, message) {
   return error;
 }
 
+export function browserLaunchOptions() {
+  return {
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+  };
+}
+
+function isBrowserLaunchError(error) {
+  const message = String(error?.message || '').toLowerCase();
+  return (
+    message.includes('executable') ||
+    message.includes('failed to launch') ||
+    message.includes('no-sandbox') ||
+    message.includes('host system is missing dependencies') ||
+    message.includes('browser has been closed')
+  );
+}
+
+export function mapCaptureError(error) {
+  if (error?.code) {
+    return error;
+  }
+
+  if (error?.name === 'TimeoutError') {
+    return errorWithCode('TIMEOUT', 'Timed out while loading page');
+  }
+
+  if (isBrowserLaunchError(error)) {
+    return errorWithCode('BROWSER_LAUNCH_FAILED', error?.message || 'Failed to launch browser');
+  }
+
+  return errorWithCode('UNKNOWN', error?.message || 'Unknown error');
+}
+
 export async function capturePostScreenshot({ url, platform, outputPath, debugPath, timeoutMs }) {
   const targetUrl = normalizeUrl(url, platform);
-  const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    viewport: { width: 390, height: 844 },
-    deviceScaleFactor: 2,
-    hasTouch: false,
-    isMobile: false
-  });
+  let browser = null;
+  let context = null;
 
   let page = null;
 
   try {
+    browser = await chromium.launch(browserLaunchOptions());
+    context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 2,
+      hasTouch: false,
+      isMobile: false
+    });
+
     page = await context.newPage();
     await page.route('**/*', (route) => {
       const type = route.request().resourceType();
@@ -89,18 +126,14 @@ export async function capturePostScreenshot({ url, platform, outputPath, debugPa
       error.debugPath = savedDebugPath;
     }
 
-    if (error.code) {
-      throw error;
-    }
-
-    if (error.name === 'TimeoutError') {
-      throw errorWithCode('TIMEOUT', 'Timed out while loading page');
-    }
-
-    throw errorWithCode('UNKNOWN', error.message || 'Unknown error');
+    throw mapCaptureError(error);
   } finally {
-    await context.close();
-    await browser.close();
+    if (context) {
+      await context.close();
+    }
+    if (browser) {
+      await browser.close();
+    }
   }
 }
 
