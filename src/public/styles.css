@@ -1,0 +1,102 @@
+:root {
+  --bg: #efefef;
+  --card: #ffffff;
+  --text: #111111;
+  --accent: #ee5a36;
+  --accent-hover: #de4e2b;
+  --border: #d2d2d2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.container {
+  max-width: 880px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+textarea {
+  width: 100%;
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+
+button,
+a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+  width: 150px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--accent);
+  color: white;
+  background: var(--accent);
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+button:hover,
+a:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+#job-panel {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.progress-wrap {
+  margin: 0.5rem 0 0.8rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 14px;
+  background: #e2e2e2;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #ee5a36, #f37a4f);
+  transition: width 0.25s ease;
+}
+
+.progress-text {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+}
+
+#summary {
+  font-size: 0.88rem;
+  margin: 0.35rem 0 0.65rem;
+}
+
+.hidden {
+  display: none;
+}
+
+li {
+  margin-bottom: 0.35rem;
+  word-break: break-all;
+}
