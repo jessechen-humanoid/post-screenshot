@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node src/server.js",
     "start": "node src/server.js",
+    "postinstall": "npx playwright install chromium",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "node -e \"console.log('No linter configured')\""
